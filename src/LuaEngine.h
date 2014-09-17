@@ -10,6 +10,7 @@
 #define __LuaGame001__LuaEngine__
 
 #include "ofMain.h"
+#include "ofxTrueTypeFontUC.h"
 #include "lua/lua.hpp"
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"

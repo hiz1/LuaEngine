@@ -17,6 +17,9 @@ vector<bool> buttons;
 int mouseX = 0, mouseY = 0;
 bool mouseButtons[] = {false, false};
 int stateCount;
+map<string, ofPtr<ofxTrueTypeFontUC> > fonts;
+ofPtr<ofxTrueTypeFontUC> currentFont;
+Pivot currentTextPivot;
 
 #pragma - mark glue
 
@@ -70,6 +73,36 @@ int l_count(lua_State *L) {
   return 1;
 }
 
+int l_setFont(lua_State *L) {
+  string fontId = luaL_checkstring(L, 1);
+  currentFont   = fonts[fontId];
+  return 0;
+}
+
+int l_setTextPivot(lua_State *L) {
+  string pivot = luaL_checkstring(L, 1);
+  
+       if(pivot == "top_left"     ) currentTextPivot = TOP_LEFT;
+  else if(pivot == "top_center"   ) currentTextPivot = TOP_CENTER;
+  else if(pivot == "top_right"    ) currentTextPivot = TOP_RIGHT;
+  else if(pivot == "middle_left"  ) currentTextPivot = MIDDLE_LEFT;
+  else if(pivot == "middle_center") currentTextPivot = MIDDLE_CENTER;
+  else if(pivot == "middle _right") currentTextPivot = MIDDLE_RIGHT;
+  else if(pivot == "bottom_left"  ) currentTextPivot = BOTTOM_LEFT;
+  else if(pivot == "bottom_center") currentTextPivot = BOTTOM_CENTER;
+  else if(pivot == "bottom_right" ) currentTextPivot = BOTTOM_RIGHT;
+
+
+}
+
+int l_drawString(lua_State *L) {
+  string text = luaL_checkstring(L, 1);
+  double x    = luaL_checknumber(L, 2);
+  double y    = luaL_checknumber(L, 3);
+  currentFont->drawString(text, x, y, currentTextPivot);
+  return 0;
+}
+
 
 static const struct luaL_Reg engineLib [] = {
   {"changeState", l_changeState},
@@ -78,6 +111,9 @@ static const struct luaL_Reg engineLib [] = {
   {"mousePos"   , l_mousePos   },
   {"mouseButton", l_mouseButton},
   {"count"      , l_count      },
+  {"setFont"    , l_setFont    },
+  {"setTextPivot", l_setTextPivot},
+  {"drawString" , l_drawString },
   {NULL, NULL}
 };
 
@@ -107,20 +143,39 @@ void LuaEngine::setup() {
   lua_getglobal(L, "buttons");
   int buttonNum = lua_objlen(L, -1);
   for(int i=1;i<=buttonNum;i++) {
-    lua_rawgeti(L, -1, 1);
+    lua_rawgeti(L, -1, i);
     char key = luaL_checkstring(L, -1)[0];
     buttonSettings.push_back(toupper(key));
     buttons.push_back(false);
     lua_pop(L,1);
   }
+  // font
+  lua_getglobal(L, "fonts");
+  int fontNum = lua_objlen(L, -1);
+  for(int i=1;i<=fontNum;i++) {
+    lua_rawgeti(L, -1, i);
+    lua_getfield(L, -1, "id");
+    string id = luaL_checkstring(L,-1);
+    lua_pop(L, 1);
+    lua_getfield(L, -1, "ttf");
+    string ttf = luaL_checkstring(L,-1);
+    lua_pop(L, 1);
+    lua_getfield(L, -1, "size");
+    int size = luaL_checkint(L,-1);
+    lua_pop(L, 1);
+    fonts[id] = ofPtr<ofxTrueTypeFontUC>(new ofxTrueTypeFontUC());
+    fonts[id]->loadFont(ttf, size);
+    lua_pop(L, 1);
+  }
+  currentTextPivot = TOP_LEFT;
   
   lua_close(L);
 
   // 最初のスクリプトを読み込み
   L = luaL_newstate();
   luaL_openlibs(L);
-  luaL_register(L, "engine", engineLib);
-  luaL_register(L, "of", ofLib);
+  luaL_register(L, "app", engineLib);
+  luaL_register(L, "app", ofLib);
   luaL_loadfile(L, ofToDataPath("sharedData.lua").c_str());
   callLua(L, "sharedData");
   luaL_loadfile(L, ofToDataPath(start + ".lua").c_str());
