@@ -9,17 +9,24 @@
 #include "LuaEngine.h"
 #include "LuaUtils.h"
 #include "luaGlueOF.h"
+#include "TexturePlane.h"
 
 #pragma - mark gloval values
+// keyboard
 vector<char> buttonSettings;
 bool cursorUp=false,cursorDown=false,cursorLeft=false,cursorRight=false;
 vector<bool> buttons;
+// mouse
 int mouseX = 0, mouseY = 0;
 bool mouseButtons[] = {false, false};
+// state
 int stateCount;
+// text
 map<string, ofPtr<ofxTrueTypeFontUC> > fonts;
 ofPtr<ofxTrueTypeFontUC> currentFont;
 Pivot currentTextPivot;
+// image
+vector<ofPtr<TexturePlane> > images;
 
 #pragma - mark glue
 
@@ -91,8 +98,6 @@ int l_setTextPivot(lua_State *L) {
   else if(pivot == "bottom_left"  ) currentTextPivot = BOTTOM_LEFT;
   else if(pivot == "bottom_center") currentTextPivot = BOTTOM_CENTER;
   else if(pivot == "bottom_right" ) currentTextPivot = BOTTOM_RIGHT;
-
-
 }
 
 int l_drawString(lua_State *L) {
@@ -103,6 +108,121 @@ int l_drawString(lua_State *L) {
   return 0;
 }
 
+#pragma mark - image module
+
+int l_createImage(lua_State *L) {
+  string imageFile = luaL_checkstring(L, 1);
+  images.push_back(ofPtr<TexturePlane>(new TexturePlane()));
+  images[images.size()-1]->setImage(ofToDataPath(imageFile));
+  TexturePlane **a = (TexturePlane **)lua_newuserdata(L, sizeof(TexturePlane *));
+  *a = images[images.size()-1].get();
+  luaL_getmetatable(L, "app.image");
+  lua_setmetatable(L, -2);
+  return 1;
+}
+
+int l_deleteImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  for(vector<ofPtr<TexturePlane> >::iterator ite = images.begin(); ite != images.end(); ite ++) {
+    if((*ite).get() == image) {
+      images.erase(ite);
+    }
+  }
+  return 0;
+}
+
+int l_setPos(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->setPosition(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  lua_pushlightuserdata(L, image);
+  return 1;
+}
+
+int l_rollImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->roll(luaL_checknumber(L, 2));
+  return 0;
+}
+
+int l_setRollImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->roll(luaL_checknumber(L, 2) - image->getRoll());
+  return 0;
+}
+
+int l_getRollImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  lua_pushnumber(L, image->getRoll());
+  return 1;
+}
+
+int l_panImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->pan(luaL_checknumber(L, 2));
+  return 0;
+}
+
+int l_setPanImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->pan(luaL_checknumber(L, 2) - image->getHeading());
+  return 0;
+}
+
+int l_getPanImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  lua_pushnumber(L, image->getHeading());
+  return 1;
+}
+
+int l_tiltImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->tilt(luaL_checknumber(L, 2));
+  return 0;
+}
+
+int l_setTiltImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->tilt(luaL_checknumber(L, 2) - image->getPitch());
+  return 0;
+}
+
+int l_getTiltImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  lua_pushnumber(L, image->getPitch());
+  return 1;
+}
+
+
+int l_setScale(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->setScale(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  lua_pushlightuserdata(L, image);
+  return 1;
+}
+
+int l_getPos(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  ofVec3f vec = image->getPosition();
+  lua_pushnumber(L, vec.x);
+  lua_pushnumber(L, vec.y);
+  lua_pushnumber(L, vec.z);
+  return 3;
+}
+
+
+int l_getScale(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  ofVec3f vec = image->getScale();
+  lua_pushnumber(L, vec.x);
+  lua_pushnumber(L, vec.y);
+  lua_pushnumber(L, vec.z);
+  return 3;
+}
+
+int l_drawImage(lua_State *L) {
+  TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
+  image->draw();
+}
 
 static const struct luaL_Reg engineLib [] = {
   {"changeState", l_changeState},
@@ -116,6 +236,43 @@ static const struct luaL_Reg engineLib [] = {
   {"drawString" , l_drawString },
   {NULL, NULL}
 };
+
+static const struct luaL_Reg engineLib_image_f [] = {
+  {"new"        , l_createImage  },
+  {NULL, NULL}
+};
+
+static const struct luaL_Reg engineLib_image_m [] = {
+  {"delete"     , l_deleteImage},
+  {"setPos"     , l_setPos     },
+  {"setScale"   , l_setScale   },
+  {"getPos"     , l_getPos     },
+  {"getScale"   , l_getScale   },
+  {"draw"       , l_drawImage  },
+  {"roll"       , l_rollImage  },
+  {"setRoll"    , l_setRollImage},
+  {"getRoll"    , l_getRollImage},
+  {"pan"        , l_panImage  },
+  {"setPan"     , l_setPanImage},
+  {"getPan"     , l_getPanImage},
+  {"tilt"       , l_tiltImage  },
+  {"setTilt"    , l_setTiltImage},
+  {"getTilt"    , l_getTiltImage},
+  {NULL, NULL}
+
+};
+
+void setupImageModule(lua_State *L) {
+  lua_settop(L, 0);
+  luaL_newmetatable(L, "app.image");
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -2, "__index");
+  stackDump(L);
+  luaL_register(L, NULL, engineLib_image_m);
+  stackDump(L);
+  luaL_register(L, "image", engineLib_image_f);
+  stackDump(L);
+}
 
 #pragma - mark main
 
@@ -176,6 +333,9 @@ void LuaEngine::setup() {
   luaL_openlibs(L);
   luaL_register(L, "app", engineLib);
   luaL_register(L, "app", ofLib);
+  // image
+  setupImageModule(L);
+  
   luaL_loadfile(L, ofToDataPath("sharedData.lua").c_str());
   callLua(L, "sharedData");
   luaL_loadfile(L, ofToDataPath(start + ".lua").c_str());
@@ -193,6 +353,7 @@ void LuaEngine::update() {
 void LuaEngine::draw() {
   ofEnableAlphaBlending();
   callLuaFunc(L, "draw");
+  ofSetColor(255, 255, 255, 255);
   ofDisableAlphaBlending();
 }
 
