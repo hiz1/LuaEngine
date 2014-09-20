@@ -138,7 +138,11 @@ int l_deleteImage(lua_State *L) {
 
 int l_setPos(lua_State *L) {
   TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
-  image->setPosition(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  float z = 0;
+  if(lua_gettop(L) >= 4) {
+    z = luaL_checknumber(L, 4);
+  }
+  image->setPosition(luaL_checknumber(L, 2), luaL_checknumber(L, 3), z);
   lua_pushlightuserdata(L, image);
   return 1;
 }
@@ -200,7 +204,7 @@ int l_getTiltImage(lua_State *L) {
 
 int l_setScale(lua_State *L) {
   TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
-  image->setScale(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  image->setScale(luaL_checknumber(L, 2), luaL_checknumber(L, 3), 1);
   lua_pushlightuserdata(L, image);
   return 1;
 }
@@ -407,23 +411,23 @@ void LuaEngine::setup() {
   // image
   setupImageModule(L);
   
-  luaL_loadfile(L, ofToDataPath("sharedData.lua").c_str());
-  callLua(L, "sharedData");
+  luaL_loadfile(L, ofToDataPath("core.lua").c_str());
+  callLua(L, "core");
   luaL_loadfile(L, ofToDataPath(start + ".lua").c_str());
   callLua(L, "start");
-  callLuaFunc(L, "setup");
+  callLuaFunc(L, "_setup");
   
   stateCount = 0;
 }
 
 void LuaEngine::update() {
-  callLuaFunc(L, "update");
+  callLuaFunc(L, "_update");
   stateCount ++;
 }
 
 void LuaEngine::draw() {
   ofEnableAlphaBlending();
-  callLuaFunc(L, "draw");
+  callLuaFunc(L, "_draw");
   ofSetColor(255, 255, 255, 255);
   ofDisableAlphaBlending();
 }

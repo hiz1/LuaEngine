@@ -29,7 +29,11 @@ int l_getHeight(lua_State *L) {
 }
 
 int l_background(lua_State *L) {
-  ofBackground(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+  if(lua_gettop(L) == 1) {
+    ofBackground(luaL_checknumber(L, 1));
+  } else {
+    ofBackground(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+  }
 }
 
 int l_noFill(lua_State *L) {
@@ -45,7 +49,14 @@ int l_setLineWidth(lua_State *L) {
 }
 
 int l_setColor(lua_State *L) {
-  ofSetColor(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  if(lua_gettop(L) == 1) {
+    ofSetColor(luaL_checknumber(L, 1));
+  } else if(lua_gettop(L) == 3) {
+    ofSetColor(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3), 255);
+  } else {
+    ofSetColor(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  }
+  
   return 0;
 }
 
