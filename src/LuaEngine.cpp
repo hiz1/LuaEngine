@@ -126,6 +126,7 @@ int l_deleteImage(lua_State *L) {
   for(vector<ofPtr<TexturePlane> >::iterator ite = images.begin(); ite != images.end(); ite ++) {
     if((*ite).get() == image) {
       images.erase(ite);
+      return 0;
     }
   }
   return 0;
@@ -265,13 +266,18 @@ static const struct luaL_Reg engineLib_image_m [] = {
 void setupImageModule(lua_State *L) {
   lua_settop(L, 0);
   luaL_newmetatable(L, "app.image");
+  // set GC
+  lua_pushstring(L, "__gc");
+  lua_pushcfunction(L, l_deleteImage);
+  stackDump(L);
+  lua_settable(L, -3);
+  stackDump(L);
+  // set method
   lua_pushvalue(L, -1);
   lua_setfield(L, -2, "__index");
-  stackDump(L);
   luaL_register(L, NULL, engineLib_image_m);
-  stackDump(L);
+  // set constructer
   luaL_register(L, "image", engineLib_image_f);
-  stackDump(L);
 }
 
 #pragma - mark main
