@@ -93,8 +93,8 @@ public:
   void unbind(const unsigned int &);
   
 #if defined(TARGET_ANDROID) || defined(TARGET_OF_IOS)
-  void ofUnloadAllFontTextures();
-  void ofReloadAllFontTextures();
+  void ofxUnloadAllFontTextures();
+  void ofxReloadAllFontTextures();
 #endif
   
   void unloadTextures();
@@ -247,17 +247,17 @@ static set<ofxTrueTypeFontUC*> & all_fonts(){
   return *all_fonts;
 }
 
-void ofUnloadAllFontTextures(){
+void ofxUnloadAllFontTextures(){
   set<ofxTrueTypeFontUC*>::iterator it;
   for (it=all_fonts().begin(); it!=all_fonts().end(); ++it) {
     (*it)->unloadTextures();
   }
 }
 
-void ofReloadAllFontTextures(){
+void ofxReloadAllFontTextures(){
   set<ofxTrueTypeFontUC*>::iterator it;
   for (it=all_fonts().begin(); it!=all_fonts().end(); ++it) {
-    (*it)->reloadTextures();
+    (*it)->reloadFont();
   }
 }
 #endif
@@ -438,7 +438,7 @@ ofxTrueTypeFontUC::ofxTrueTypeFontUC(){
   mImpl->bMakeContours = false;
   
 #if defined(TARGET_ANDROID) || defined(TARGET_OF_IOS)
-  mImpl->all_fonts().insert(this);
+  all_fonts().insert(this);
 #endif
   mImpl->letterSpacing = 1;
   mImpl->spaceSize = 1;
@@ -461,7 +461,7 @@ ofxTrueTypeFontUC::~ofxTrueTypeFontUC(){
   }
   
 #if defined(TARGET_ANDROID) || defined(TARGET_OF_IOS)
-  mImpl->all_fonts().erase(this);
+  all_fonts().erase(this);
 #endif
   
   if (mImpl != NULL)
@@ -1260,6 +1260,10 @@ ofVec2f ofxTrueTypeFontUC::getOffset(const ofRectangle &r, Pivot pivot) {
 //  mImpl->bLoadedOk = true;
 //
 //}
+
+void ofxTrueTypeFontUC::unloadTextures() {
+    mImpl->unloadTextures();
+}
 
 //===========================================================
 namespace util {

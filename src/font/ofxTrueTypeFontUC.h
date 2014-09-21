@@ -44,6 +44,7 @@ public:
   void setSpaceSize(float size);
   float stringWidth(const string &utf8_string);
   float stringHeight(const string &utf8_string);
+    void unloadTextures();
   // get the num of loaded chars
   int getNumCharacters();
   ofTextEncoding getEncoding() const;
