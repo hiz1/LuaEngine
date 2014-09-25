@@ -16,10 +16,12 @@
 #include "../lua/lauxlib.h"
 #include "TexturePlane.h"
 
+namespace image {
+
 // image
 extern vector<ofPtr<TexturePlane> > images;
 
-void openlib_image(lua_State *L);
+void openlib(lua_State *L);
 
 int l_createImage(lua_State *L);
 int l_deleteImage(lua_State *L);
@@ -37,5 +39,7 @@ int l_setScale(lua_State *L);
 int l_getPos(lua_State *L);
 int l_getScale(lua_State *L);
 int l_drawImage(lua_State *L);
+  
+}
 
 #endif /* defined(__LuaGame001__luaGlueImage__) */

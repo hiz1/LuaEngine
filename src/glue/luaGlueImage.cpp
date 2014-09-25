@@ -9,6 +9,8 @@
 #include "luaGlueImage.h"
 #include "LuaUtils.h"
 
+namespace image {
+
 static const struct luaL_Reg engineLib_image_f [] = {
   {"new"        , l_createImage  },
   {NULL, NULL}
@@ -34,7 +36,7 @@ static const struct luaL_Reg engineLib_image_m [] = {
   
 };
 
-void openlib_image(lua_State *L) {
+void openlib(lua_State *L) {
   lua_settop(L, 0);
   luaL_newmetatable(L, "app.image");
   // set GC
@@ -171,5 +173,7 @@ int l_getScale(lua_State *L) {
 int l_drawImage(lua_State *L) {
   TexturePlane *image = *(TexturePlane **)lua_touserdata(L, 1);
   image->draw();
+}
+  
 }
 

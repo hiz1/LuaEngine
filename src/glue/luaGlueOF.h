@@ -15,7 +15,9 @@
 #include "../lua/lualib.h"
 #include "../lua/lauxlib.h"
 
-void openlib_of(lua_State *L);
+namespace of {
+
+void openlib(lua_State *L);
 
 int l_setFrameRate(lua_State *L);
 int l_getElapsedTimef(lua_State *L);
@@ -31,5 +33,6 @@ int l_rect(lua_State *L);
 int l_rectRounded(lua_State *L);
 int l_circle(lua_State *L);
 
+}
 
 #endif /* defined(__LuaGame001__luaGlueOF__) */

@@ -8,6 +8,8 @@
 
 #include "luaGlueOF.h"
 
+namespace of {
+
 static const struct luaL_Reg engineLib_of [] = {
   {"setFrameRate", l_setFrameRate},
   {"getElapsedTimef", l_getElapsedTimef},
@@ -25,7 +27,7 @@ static const struct luaL_Reg engineLib_of [] = {
   {NULL, NULL}
 };
 
-void openlib_of(lua_State *L) {
+void openlib(lua_State *L) {
   luaL_register(L, "app", engineLib_of);
 }
 
@@ -103,4 +105,6 @@ int l_rectRounded(lua_State *L) {
 
 int l_circle(lua_State *L) {
   ofCircle(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+}
+  
 }

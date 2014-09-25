@@ -10,6 +10,8 @@
 #include <cassert>
 #include "LuaUtils.h"
 
+namespace mesh {
+
 static const struct luaL_Reg engineLib_mesh_m [] = {
   {"delete"         , l_deleteMesh},
   {"draw"           , l_drawMesh},
@@ -21,7 +23,7 @@ static const struct luaL_Reg engineLib_mesh_f [] = {
   {NULL, NULL}
 };
 
-void openlib_mesh(lua_State *L) {
+void openlib(lua_State *L) {
   lua_settop(L, 0);
   luaL_newmetatable(L, "app.mesh");
   // set GC
@@ -102,4 +104,6 @@ int l_drawMesh(lua_State *L) {
   ofTranslate(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
   mesh->draw();
   ofPopMatrix();
+}
+  
 }

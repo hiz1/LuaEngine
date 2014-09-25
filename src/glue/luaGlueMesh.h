@@ -16,13 +16,16 @@
 #include "../lua/lauxlib.h"
 #include "../lua/lualib.h"
 
+namespace mesh {
+
 extern vector<ofPtr<ofMesh> > meshes;
 
-extern void openlib_mesh(lua_State *L);
+extern void openlib(lua_State *L);
 
 int l_createMesh(lua_State *L);
 int l_deleteMesh(lua_State *L);
 int l_drawMesh(lua_State *L);
 
+}
 
 #endif /* defined(__LuaGame001__Mesh__) */
