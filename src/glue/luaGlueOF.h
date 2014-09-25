@@ -11,9 +11,11 @@
 
 #include "ofMain.h"
 
-#include "lua/lua.hpp"
-#include "lua/lualib.h"
-#include "lua/lauxlib.h"
+#include "../lua/lua.hpp"
+#include "../lua/lualib.h"
+#include "../lua/lauxlib.h"
+
+void openlib_of(lua_State *L);
 
 int l_setFrameRate(lua_State *L);
 int l_getElapsedTimef(lua_State *L);
@@ -28,23 +30,6 @@ int l_fromHSB(lua_State *L);
 int l_rect(lua_State *L);
 int l_rectRounded(lua_State *L);
 int l_circle(lua_State *L);
-
-static const struct luaL_Reg ofLib [] = {
-  {"setFrameRate", l_setFrameRate},
-  {"getElapsedTimef", l_getElapsedTimef},
-  {"getWidth", l_getWidth},
-  {"getHeight", l_getHeight},
-  {"background", l_background},
-  {"noFill", l_noFill},
-  {"fill", l_fill},
-  {"setLineWidth", l_setLineWidth},
-  {"setColor", l_setColor},
-  {"fromHSB", l_fromHSB},
-  {"rect", l_rect},
-  {"rectRounded", l_rectRounded},
-  {"circle", l_circle},
-  {NULL, NULL}
-};
 
 
 #endif /* defined(__LuaGame001__luaGlueOF__) */

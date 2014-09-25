@@ -8,6 +8,27 @@
 
 #include "luaGlueOF.h"
 
+static const struct luaL_Reg engineLib_of [] = {
+  {"setFrameRate", l_setFrameRate},
+  {"getElapsedTimef", l_getElapsedTimef},
+  {"getWidth", l_getWidth},
+  {"getHeight", l_getHeight},
+  {"background", l_background},
+  {"noFill", l_noFill},
+  {"fill", l_fill},
+  {"setLineWidth", l_setLineWidth},
+  {"setColor", l_setColor},
+  {"fromHSB", l_fromHSB},
+  {"rect", l_rect},
+  {"rectRounded", l_rectRounded},
+  {"circle", l_circle},
+  {NULL, NULL}
+};
+
+void openlib_of(lua_State *L) {
+  luaL_register(L, "app", engineLib_of);
+}
+
 int l_setFrameRate(lua_State *L) {
   ofSetFrameRate(luaL_checknumber(L, 1));
   return 0;

@@ -14,6 +14,7 @@
 #include "lua/lua.hpp"
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
+#include "text/Message.h"
 
 class LuaEngine {
 public:
