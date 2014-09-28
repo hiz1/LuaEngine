@@ -89,19 +89,21 @@ void LuaEngine::setup() {
   text::openlib(L);
   luaL_loadfile(L, ofToDataPath("core.lua").c_str());
   callLua(L, "core");
-  luaL_loadfile(L, ofToDataPath(start + ".lua").c_str());
-  callLua(L, "start");
-  callLuaFunc(L, "setup");
+  lua_getglobal(L, "loadState");
+  lua_pushstring(L, start.c_str());
+  callLua(L, "loadState", 1,0);
+  
+  callLuaFunc(L, "_setup");
 }
 
 void LuaEngine::update() {
-  callLuaFunc(L, "update");
+  callLuaFunc(L, "_update");
   core::update();
 }
 
 void LuaEngine::draw() {
   ofEnableAlphaBlending();
-  callLuaFunc(L, "draw");
+  callLuaFunc(L, "_draw");
   ofSetColor(255, 255, 255, 255);
   ofDisableAlphaBlending();
 }

@@ -15,6 +15,7 @@
 #include "../lua/lualib.h"
 #include "../lua/lauxlib.h"
 #include "../font/ofxTrueTypeFontUC.h"
+#include "../utils/CommonUtil.h"
 
 namespace text {
   void openlib(lua_State *L);
@@ -24,6 +25,10 @@ namespace text {
   void setFont(string fontId);
   void setTextPivot(string pivot);
   void drawString(string pivot, float x, float y);
+  int  length(const string &text);
+  string substr(const string &s, int begin, int length);
+  string paragraph(const string &s, int col, int row);
+  ofVec2f textSize(const string &s, const string &fontId);
 
 }
 

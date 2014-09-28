@@ -31,10 +31,38 @@ namespace text {
     return 0;
   }
   
+  int l_length(lua_State *L) {
+    lua_pushnumber(L, length(luaL_checkstring(L,1)));
+    return 1;
+  }
+  
+  int l_substr(lua_State *L) {
+    lua_pushstring(L, substr(luaL_checkstring(L, 1), luaL_checkinteger(L, 2), luaL_checkinteger(L, 3)).c_str());
+    return 1;
+  }
+  
+  int l_paragraph(lua_State *L) {
+    lua_pushstring(L, paragraph(luaL_checkstring(L, 1), luaL_checkinteger(L, 2), luaL_checkinteger(L, 3)).c_str());
+    return 1;
+  }
+  
+  int l_textSize(lua_State *L) {
+    ofVec2f size = textSize(luaL_checkstring(L, 1),
+             luaL_checkstring(L, 2));
+    lua_pushnumber(L, size.x);
+    lua_pushnumber(L, size.y);
+    return 2;
+  }
+
+  
   static const struct luaL_Reg engineLib [] = {
     {"setFont"    , l_setFont    },
     {"setTextPivot", l_setTextPivot},
     {"drawString" , l_drawString },
+    {"length"     , l_length     },
+    {"substr"     , l_substr     },
+    {"paragraph"  , l_paragraph  },
+    {"textSize"   , l_textSize   },
     {NULL, NULL}
   };
   
@@ -70,6 +98,23 @@ namespace text {
   
   void drawString(string text, float x, float y) {
     currentFont->drawString(text, x, y, currentTextPivot);
+  }
+  
+  int length(const string &text) {
+    return utf8len(text);
+  }
+  
+  string substr(const string &s, int begin, int length) {
+    return utf8substr(s, begin, length);
+  }
+  
+  string paragraph(const string &s, int col, int row) {
+    return createParagraph(s, col, row);
+  }
+  
+  ofVec2f textSize(const string &s, const string &fontId) {
+    ofRectangle box = fonts[fontId]->getStringBoundingBox(s, 0, 0);
+    return ofVec2f(box.width, box.height);
   }
   
 }
