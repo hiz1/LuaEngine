@@ -8,14 +8,13 @@
 
 #include "LuaEngine.h"
 #include "LuaUtils.h"
-#include "TexturePlane.h"
-#include "glue/luaGlueOF.h"
-#include "glue/luaGlueCore.h"
-#include "glue/luaGlueImage.h"
-#include "glue/luaGlueMesh.h"
-#include "glue/luaGlueInput.h"
-#include "glue/luaGlueSound.h"
-#include "glue/luaGlueText.h"
+#include "glue/ofModule.h"
+#include "glue/coreModule.h"
+#include "glue/imageModule.h"
+#include "glue/meshModule.h"
+#include "glue/inputModule.h"
+#include "glue/soundModule.h"
+#include "glue/textModule.h"
 
 #pragma - mark main
 
@@ -40,44 +39,41 @@ void LuaEngine::setup() {
   lua_pop(L,1);
   ofSetWindowShape(width, height);
   // key config
+  vector<char> keySettings;
   lua_getglobal(L, "buttons");
   int buttonNum = lua_objlen(L, -1);
   for(int i=1;i<=buttonNum;i++) {
     lua_rawgeti(L, -1, i);
     char key = luaL_checkstring(L, -1)[0];
-    input::buttonSettings.push_back(toupper(key));
-    input::buttons.push_back(false);
+    keySettings.push_back(toupper(key));
     lua_pop(L,1);
   }
+  input::setKeySettings(keySettings);
   // font
   lua_getglobal(L, "fonts");
+  vector<string> ids;
+  vector<string> ttfPaths;
+  vector<double> sizes;
   int fontNum = lua_objlen(L, -1);
   for(int i=1;i<=fontNum;i++) {
     lua_rawgeti(L, -1, i);
     lua_getfield(L, -1, "id");
-    string id = luaL_checkstring(L,-1);
+    ids.push_back(luaL_checkstring(L,-1));
     lua_pop(L, 1);
     lua_getfield(L, -1, "ttf");
-    string ttf = luaL_checkstring(L,-1);
+    ttfPaths.push_back(luaL_checkstring(L,-1));
     lua_pop(L, 1);
     lua_getfield(L, -1, "size");
-    int size = luaL_checkint(L,-1);
+    sizes.push_back(luaL_checkint(L,-1));
     lua_pop(L, 1);
-    text::fonts[id] = ofPtr<ofxTrueTypeFontUC>(new ofxTrueTypeFontUC());
-    text::fonts[id]->loadFont(ttf, size);
     lua_pop(L, 1);
   }
-  text::currentTextPivot = TOP_LEFT;
+  text::initlib(ids, ttfPaths, sizes, TOP_LEFT);
   
   // sound
   lua_getglobal(L, "se_chunnel");
   int seChunnel = luaL_checknumber(L, -1);
-  sound::bgm.setLoop(true);
-  sound::bgs.setLoop(true);
-  for(int i=0;i<seChunnel;i++){
-    sound::se.push_back(ofPtr<ofSoundPlayer>(new ofSoundPlayer()));
-    sound::se[sound::se.size()-1]->unloadSound();
-  }
+  sound::initlib(seChunnel);
   
   lua_close(L);
 
@@ -96,13 +92,11 @@ void LuaEngine::setup() {
   luaL_loadfile(L, ofToDataPath(start + ".lua").c_str());
   callLua(L, "start");
   callLuaFunc(L, "setup");
-  
-  core::stateCount = 0;
 }
 
 void LuaEngine::update() {
   callLuaFunc(L, "update");
-  core::stateCount ++;
+  core::update();
 }
 
 void LuaEngine::draw() {
@@ -113,52 +107,23 @@ void LuaEngine::draw() {
 }
 
 void LuaEngine::keyPressed(int key) {
-  if(key == OF_KEY_UP   )input::cursorUp    = true;
-  if(key == OF_KEY_DOWN )input::cursorDown  = true;
-  if(key == OF_KEY_LEFT )input::cursorLeft  = true;
-  if(key == OF_KEY_RIGHT)input::cursorRight = true;
-  for(int i=0;i<input::buttonSettings.size();i++) {
-    if(toupper(key) == input::buttonSettings[i]) {
-      input::buttons[i] = true;
-      if(i == 0) {
-//        ofNotifyEvent(dequeMessageEvent);
-      }
-    }
-  }
+  input::keyPressed(key);
 }
 void LuaEngine::keyReleased(int key) {
-  if(key == OF_KEY_UP   )input::cursorUp    = false;
-  if(key == OF_KEY_DOWN )input::cursorDown  = false;
-  if(key == OF_KEY_LEFT )input::cursorLeft  = false;
-  if(key == OF_KEY_RIGHT)input::cursorRight = false;
-  for(int i=0;i<input::buttonSettings.size();i++) {
-    if(toupper(key) == input::buttonSettings[i]) {
-      input::buttons[i] = false;
-    }
-  }
+  input::keyReleased(key);
   
 }
 void LuaEngine::mouseMoved(int x, int y ) {
-  input::mouseX = x;
-  input::mouseY = y;
+  input::mouseMoved(x, y);
 }
 void LuaEngine::mouseDragged(int x, int y, int button) {
-  input::mouseX = x;
-  input::mouseY = y;
-  input::mouseButtons[button] = true;
-  
+  input::mouseDragged(x, y, button);
 }
 void LuaEngine::mousePressed(int x, int y, int button) {
-  input::mouseX = x;
-  input::mouseY = y;
-  input::mouseButtons[button] = true;
-  
+  input::mousePressed(x, y, button);
 }
 void LuaEngine::mouseReleased(int x, int y, int button) {
-  input::mouseX = x;
-  input::mouseY = y;
-  input::mouseButtons[button] = false;
-  
+  input::mouseReleased(x, y, button);
 }
 
 

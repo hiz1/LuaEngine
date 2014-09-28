@@ -6,30 +6,9 @@
 //
 //
 
-#include "luaGlueOF.h"
+#include "ofModule.h"
 
 namespace of {
-
-static const struct luaL_Reg engineLib_of [] = {
-  {"setFrameRate", l_setFrameRate},
-  {"getElapsedTimef", l_getElapsedTimef},
-  {"getWidth", l_getWidth},
-  {"getHeight", l_getHeight},
-  {"background", l_background},
-  {"noFill", l_noFill},
-  {"fill", l_fill},
-  {"setLineWidth", l_setLineWidth},
-  {"setColor", l_setColor},
-  {"fromHSB", l_fromHSB},
-  {"rect", l_rect},
-  {"rectRounded", l_rectRounded},
-  {"circle", l_circle},
-  {NULL, NULL}
-};
-
-void openlib(lua_State *L) {
-  luaL_register(L, "app", engineLib_of);
-}
 
 int l_setFrameRate(lua_State *L) {
   ofSetFrameRate(luaL_checknumber(L, 1));
@@ -107,4 +86,24 @@ int l_circle(lua_State *L) {
   ofCircle(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3));
 }
   
+  static const struct luaL_Reg engineLib_of [] = {
+    {"setFrameRate", l_setFrameRate},
+    {"getElapsedTimef", l_getElapsedTimef},
+    {"getWidth", l_getWidth},
+    {"getHeight", l_getHeight},
+    {"background", l_background},
+    {"noFill", l_noFill},
+    {"fill", l_fill},
+    {"setLineWidth", l_setLineWidth},
+    {"setColor", l_setColor},
+    {"fromHSB", l_fromHSB},
+    {"rect", l_rect},
+    {"rectRounded", l_rectRounded},
+    {"circle", l_circle},
+    {NULL, NULL}
+  };
+  
+  void openlib(lua_State *L) {
+    luaL_register(L, "app", engineLib_of);
+  }
 }

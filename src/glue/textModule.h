@@ -17,19 +17,14 @@
 #include "../font/ofxTrueTypeFontUC.h"
 
 namespace text {
-
-  // text
-  extern map<string, ofPtr<ofxTrueTypeFontUC> > fonts;
-  extern ofPtr<ofxTrueTypeFontUC> currentFont;
-  extern Pivot currentTextPivot;
-
-
   void openlib(lua_State *L);
-
-  int l_setFont(lua_State *L);
-  int l_setTextPivot(lua_State *L);
-  int l_drawString(lua_State *L);
+  void initlib(vector<string> ids, vector<string> ttfPaths, vector<double> sizes, Pivot pivot);
   
+#pragma mark - lua
+  void setFont(string fontId);
+  void setTextPivot(string pivot);
+  void drawString(string pivot, float x, float y);
+
 }
 
 #endif /* defined(__LuaGame001__luaGlueCore__) */

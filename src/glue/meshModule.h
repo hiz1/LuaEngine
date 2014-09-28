@@ -18,14 +18,13 @@
 
 namespace mesh {
 
-extern vector<ofPtr<ofMesh> > meshes;
+  void openlib(lua_State *L);
 
-extern void openlib(lua_State *L);
-
-int l_createMesh(lua_State *L);
-int l_deleteMesh(lua_State *L);
-int l_drawMesh(lua_State *L);
-
+  #pragma mark - lua
+  ofPtr<ofMesh> createMesh(vector<ofPoint> verts, vector<ofIndexType> indices, vector<ofPoint> normals);
+  void deleteMesh(ofMesh *mesh);
+  void drawMesh(ofMesh *mesh, ofPoint pos);
+  
 }
 
 #endif /* defined(__LuaGame001__Mesh__) */

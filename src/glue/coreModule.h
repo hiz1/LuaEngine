@@ -17,16 +17,13 @@
 #include "../lua/lauxlib.h"
 
 namespace core {
+  void openlib(lua_State *L);
+  void initlib();
+  void update();
 
-// state
-extern int stateCount;
-
-
-void openlib(lua_State *L);
-
-int l_changeState(lua_State *L);
-int l_count(lua_State *L);
-
+  #pragma mark - lua
+  void changeState(lua_State *L, string nextState);
+  int  count();
 
   
 }

@@ -6,37 +6,57 @@
 //
 //
 
-#include "luaGlueText.h"
+#include "textModule.h"
 #include "LuaUtils.h"
 
 namespace text {
+  map<string, ofPtr<ofxTrueTypeFontUC> > fonts;
+  ofPtr<ofxTrueTypeFontUC> currentFont;
+  Pivot currentTextPivot;
 
+#pragma mark - glue code
+  int l_setFont(lua_State *L) {
+    setFont(luaL_checkstring(L, 1));
+    return 0;
+  }
+  
+  int l_setTextPivot(lua_State *L) {
+    setTextPivot(luaL_checkstring(L, 1));
+  }
+  
+  int l_drawString(lua_State *L) {
+    drawString(luaL_checkstring(L, 1),
+               luaL_checknumber(L, 2),
+               luaL_checknumber(L, 3));
+    return 0;
+  }
+  
   static const struct luaL_Reg engineLib [] = {
     {"setFont"    , l_setFont    },
     {"setTextPivot", l_setTextPivot},
     {"drawString" , l_drawString },
     {NULL, NULL}
   };
-
+  
   void openlib(lua_State *L) {
     luaL_register(L, "app", engineLib);
   }
-    
-  // text
-  map<string, ofPtr<ofxTrueTypeFontUC> > fonts;
-  ofPtr<ofxTrueTypeFontUC> currentFont;
-  Pivot currentTextPivot;
+  
+  void initlib(vector<string> ids, vector<string> ttfPaths, vector<double> sizes, Pivot pivot) {
+    for(int i=0;i<ids.size();i++) {
+      fonts[ids[i]] = ofPtr<ofxTrueTypeFontUC>(new ofxTrueTypeFontUC());
+      fonts[ids[i]]->loadFont(ttfPaths[i], sizes[i]);
+    }
+    text::currentTextPivot = pivot;
 
-
-  int l_setFont(lua_State *L) {
-    string fontId = luaL_checkstring(L, 1);
-    currentFont   = fonts[fontId];
-    return 0;
   }
   
-  int l_setTextPivot(lua_State *L) {
-    string pivot = luaL_checkstring(L, 1);
-    
+#pragma mark - module contents
+  void setFont(string fontId) {
+    currentFont   = fonts[fontId];
+  }
+  
+  void setTextPivot(string pivot) {
     if(pivot == "top_left"     ) currentTextPivot = TOP_LEFT;
     else if(pivot == "top_center"   ) currentTextPivot = TOP_CENTER;
     else if(pivot == "top_right"    ) currentTextPivot = TOP_RIGHT;
@@ -48,12 +68,8 @@ namespace text {
     else if(pivot == "bottom_right" ) currentTextPivot = BOTTOM_RIGHT;
   }
   
-  int l_drawString(lua_State *L) {
-    string text = luaL_checkstring(L, 1);
-    double x    = luaL_checknumber(L, 2);
-    double y    = luaL_checknumber(L, 3);
+  void drawString(string text, float x, float y) {
     currentFont->drawString(text, x, y, currentTextPivot);
-    return 0;
   }
   
 }

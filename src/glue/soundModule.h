@@ -17,19 +17,15 @@
 
 namespace sound {
 
-  // sound
-  extern ofSoundPlayer         bgm;
-  extern ofSoundPlayer         bgs;
-  extern vector<ofPtr<ofSoundPlayer> > se;
-
-
   void openlib(lua_State *L);
-
-  int l_playBGM(lua_State *L);
-  int l_stopBGM(lua_State *L);
-  int l_playBGS(lua_State *L);
-  int l_stopBGS(lua_State *L);
-  int l_playSE(lua_State *L);
+  void initlib(int seChunnel);
+  
+  #pragma mark - lua
+  void playBGM(string bgmFile, double volume = 1.0);
+  void stopBGM();
+  void playBGS(string bgsFile, double volume = 1.0);
+  void stopBGS();
+  bool playSE(string seFile, double volume = 1.0);
   
 }
 
