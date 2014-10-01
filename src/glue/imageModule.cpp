@@ -202,13 +202,13 @@ namespace image {
   
   ofPtr<TexturePlane> createImage(const string &imageFile) {
     images.push_back(ofPtr<TexturePlane>(new TexturePlane()));
-    images[images.size()-1]->setImage(ofToDataPath(imageFile));
+    images[images.size()-1]->setImage(ofToDataPath("Images/" + imageFile));
     images[images.size()-1]->resizeToCurrentTexture();
     return images[images.size()-1];
   }
   
   void setImage(TexturePlane *image, const string &imageFile) {
-    image->setImage(ofToDataPath(imageFile));
+    image->setImage(ofToDataPath("Images/" + imageFile));
     image->resizeToCurrentTexture();
   }
   

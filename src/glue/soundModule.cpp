@@ -75,7 +75,7 @@ namespace sound {
   }
   
   void playBGM(string bgmFile, double volume) {
-    bgm.loadSound(bgmFile, true);
+    bgm.loadSound("BGM/" + bgmFile, true);
     bgm.setVolume(volume);
     bgm.play();
   }
@@ -85,7 +85,7 @@ namespace sound {
   }
   
   void playBGS(string bgsFile, double volume) {
-    bgs.loadSound(bgsFile, true);
+    bgs.loadSound("BGS/" + bgsFile, true);
     bgs.setVolume(volume);
     bgs.play();
   }
@@ -97,7 +97,7 @@ namespace sound {
   bool playSE(string seFile, double volume) {
     for(ofPtr<ofSoundPlayer> s : se) {
       if(!s->getIsPlaying()) {
-        s->loadSound(seFile, true);
+        s->loadSound("SE/" + seFile, true);
         s->setVolume(volume);
         s->play();
         return true;

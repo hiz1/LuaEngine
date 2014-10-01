@@ -21,7 +21,7 @@
 void LuaEngine::setup() {
   // ブート用情報を取得
   L = luaL_newstate();
-  luaL_loadfile(L, ofToDataPath("boot.lua").c_str());
+  luaL_loadfile(L, ofToDataPath("Scripts/boot.lua").c_str());
   callLua(L, "boot");
   // set first state
   lua_getglobal(L, "start");
@@ -61,7 +61,7 @@ void LuaEngine::setup() {
     ids.push_back(luaL_checkstring(L,-1));
     lua_pop(L, 1);
     lua_getfield(L, -1, "ttf");
-    ttfPaths.push_back(luaL_checkstring(L,-1));
+    ttfPaths.push_back("Fonts/" + string(luaL_checkstring(L,-1)));
     lua_pop(L, 1);
     lua_getfield(L, -1, "size");
     sizes.push_back(luaL_checkint(L,-1));
@@ -87,10 +87,10 @@ void LuaEngine::setup() {
   input::openlib(L);
   sound::openlib(L);
   text::openlib(L);
-  luaL_loadfile(L, ofToDataPath("core.lua").c_str());
+  luaL_loadfile(L, ofToDataPath("Scripts/Lib/core.lua").c_str());
   callLua(L, "core");
   lua_getglobal(L, "loadState");
-  lua_pushstring(L, start.c_str());
+  lua_pushstring(L, string(start).c_str());
   callLua(L, "loadState", 1,0);
   
   callLuaFunc(L, "_setup");
