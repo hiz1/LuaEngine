@@ -22,6 +22,36 @@ namespace image {
     return 1;
   }
 
+  int l_setImage(lua_State *L) {
+    setImage(*(TexturePlane **)lua_touserdata(L, 1), luaL_checkstring(L, 2));
+    return 0;
+  }
+  
+  int l_setSubsection(lua_State *L) {
+    setSubsection(*(TexturePlane **)lua_touserdata(L, 1),
+                  luaL_checknumber(L, 2),
+                  luaL_checknumber(L, 3),
+                  luaL_checknumber(L, 4),
+                  luaL_checknumber(L, 5));
+    return 0;
+  }
+  
+  int l_getSubsection(lua_State *L) {
+    ofVec4f rect = getSubsection(*(TexturePlane **)lua_touserdata(L, 1));
+    lua_pushnumber(L, rect.x);
+    lua_pushnumber(L, rect.y);
+    lua_pushnumber(L, rect.z);
+    lua_pushnumber(L, rect.w);
+    return 4;
+  }
+  
+  int l_getImageSize(lua_State *L) {
+    ofVec2f size = getImageSize(*(TexturePlane **)lua_touserdata(L, 1));
+    lua_pushnumber(L, size.x);
+    lua_pushnumber(L, size.y);
+    return 2;
+  }
+  
   int l_deleteImage(lua_State *L) {
     deleteImage(*(TexturePlane **)lua_touserdata(L, 1));
 
@@ -132,6 +162,10 @@ namespace image {
   
   static const struct luaL_Reg engineLib_image_m [] = {
     {"delete"     , l_deleteImage},
+    {"setImage"   , l_setImage   },
+    {"setSubsection", l_setSubsection},
+    {"getSubsection", l_getSubsection},
+    {"getImageSize", l_getImageSize},
     {"setPos"     , l_setPos     },
     {"setScale"   , l_setScale   },
     {"getPos"     , l_getPos     },
@@ -169,7 +203,26 @@ namespace image {
   ofPtr<TexturePlane> createImage(const string &imageFile) {
     images.push_back(ofPtr<TexturePlane>(new TexturePlane()));
     images[images.size()-1]->setImage(ofToDataPath(imageFile));
+    images[images.size()-1]->resizeToCurrentTexture();
     return images[images.size()-1];
+  }
+  
+  void setImage(TexturePlane *image, const string &imageFile) {
+    image->setImage(ofToDataPath(imageFile));
+    image->resizeToCurrentTexture();
+  }
+  
+  void setSubsection(TexturePlane *image, float u1, float v1, float u2, float v2) {
+    image->mapTexCoords(u1, v1, u2, v2);
+    image->set((u2-u1) * image->getScale().x, (v2-v1) * image->getScale().y);
+  }
+  
+  ofVec4f &getSubsection(TexturePlane *image) {
+    return image->getTexCoords();
+  }
+  
+  ofVec2f getImageSize(TexturePlane *image) {
+    return ofVec2f(image->getTexture().getWidth(), image->getTexture().getHeight());
   }
   
   void deleteImage(TexturePlane *image) {
@@ -184,7 +237,6 @@ namespace image {
   map<string, ofImage> imageCache;
   
   void TexturePlane::initialize() {
-    texCoords = ofVec4f(0,0,1,1);
     set( 200, 100, 6, 3);
   }
   
@@ -195,6 +247,9 @@ namespace image {
     }
     this->texture = &imageCache[imagePath].getTextureReference();
     this->setResolution(2, 2);
+  }
+  
+  void TexturePlane::resizeToCurrentTexture() {
     resizeToTexture(*texture);
   }
   
@@ -202,6 +257,10 @@ namespace image {
     if(texture != NULL) texture->bind();
     ofPlanePrimitive::draw();
     if(texture != NULL) texture->unbind();
+  }
+  
+  ofTexture &TexturePlane::getTexture() {
+    return *texture;
   }
   
 }
