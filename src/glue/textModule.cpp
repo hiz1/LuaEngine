@@ -90,7 +90,7 @@ namespace text {
     else if(pivot == "top_right"    ) currentTextPivot = TOP_RIGHT;
     else if(pivot == "middle_left"  ) currentTextPivot = MIDDLE_LEFT;
     else if(pivot == "middle_center") currentTextPivot = MIDDLE_CENTER;
-    else if(pivot == "middle _right") currentTextPivot = MIDDLE_RIGHT;
+    else if(pivot == "middle_right") currentTextPivot = MIDDLE_RIGHT;
     else if(pivot == "bottom_left"  ) currentTextPivot = BOTTOM_LEFT;
     else if(pivot == "bottom_center") currentTextPivot = BOTTOM_CENTER;
     else if(pivot == "bottom_right" ) currentTextPivot = BOTTOM_RIGHT;
