@@ -40,9 +40,12 @@ int l_count(lua_State *L) {
   }
   
   void changeState(lua_State *L, string nextState) {
-    luaL_loadfile(L, ofToDataPath(nextState + ".lua").c_str());
-    callLua(L, nextState);
-    callLuaFunc(L, "setup");
+//    luaL_loadfile(L, ofToDataPath("script/" + nextState + ".lua").c_str());
+//    callLua(L, nextState);
+//    callLuaFunc(L, "setup");
+    lua_getglobal(L, "loadState");
+    lua_pushstring(L, string(nextState).c_str());
+    callLua(L, "loadState", 1,0);
     stateCount = 0;
   }
   

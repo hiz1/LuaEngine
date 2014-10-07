@@ -86,6 +86,59 @@ int l_circle(lua_State *L) {
   ofCircle(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3));
 }
   
+  int l_ellipse(lua_State *L) {
+    ofEllipse(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  }
+  
+  int l_triangle(lua_State *L) {
+    ofTriangle(luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3),
+               luaL_checknumber(L, 4), luaL_checknumber(L, 5), luaL_checknumber(L, 6));
+  }
+  
+  int l_line(lua_State *L) {
+    ofLine(luaL_checknumber(L, 1), luaL_checknumber(L, 2),
+           luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+  }
+  
+  int l_pushMatrix(lua_State *L) {
+    ofPushMatrix();
+  }
+  int l_popMatrix(lua_State *L) {
+    ofPopMatrix();
+  }
+  int l_pushStyle(lua_State *L) {
+    ofPushStyle();
+  }
+  int l_popStyle(lua_State *L) {
+    ofPopStyle();
+  }
+  int l_translate(lua_State *L) {
+    float z=0;
+    if(lua_gettop(L) >= 3) z = luaL_checknumber(L, 3);
+    ofTranslate(ofPoint(luaL_checknumber(L, 1), luaL_checknumber(L, 2), z));
+  }
+  int l_scale(lua_State *L) {
+    float y, z=1;
+    if(lua_gettop(L) == 1) y = luaL_checknumber(L, 1);
+    else y = luaL_checknumber(L, 2);
+    if(lua_gettop(L) >= 3) z = luaL_checknumber(L, 3);
+    ofScale(luaL_checknumber(L, 1), y, z);
+  }
+  int l_rotate(lua_State *L) {
+    ofRotate(luaL_checknumber(L, 1));
+  }
+  int l_rotateX(lua_State *L) {
+    ofRotateX(luaL_checknumber(L, 1));
+  }
+  int l_rotateY(lua_State *L) {
+    ofRotate(luaL_checknumber(L, 1));
+  }
+  int l_rotateZ(lua_State *L) {
+    ofRotateZ(luaL_checknumber(L, 1));
+  }
+
+  
+  
   static const struct luaL_Reg engineLib_of [] = {
     {"setFrameRate", l_setFrameRate},
     {"getElapsedTimef", l_getElapsedTimef},
@@ -100,6 +153,19 @@ int l_circle(lua_State *L) {
     {"rect", l_rect},
     {"rectRounded", l_rectRounded},
     {"circle", l_circle},
+    {"ellipse", l_ellipse},
+    {"triangle", l_triangle},
+    {"line"   , l_line},
+    {"pushMatrix", l_pushMatrix},
+    {"popMatrix", l_popMatrix},
+    {"pushStyle", l_pushStyle},
+    {"popStyle", l_popStyle},
+    {"translate", l_translate},
+    {"scale"    , l_scale},
+    {"rotate", l_rotate},
+    {"rotateX", l_rotateX},
+    {"rotateY", l_rotateY},
+    {"rotateZ", l_rotateZ},
     {NULL, NULL}
   };
   
