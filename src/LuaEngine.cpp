@@ -89,9 +89,22 @@ void LuaEngine::setup() {
   text::openlib(L);
   luaL_loadfile(L, ofToDataPath("Scripts/Lib/core.lua").c_str());
   callLua(L, "core");
-  lua_getglobal(L, "loadState");
+  ofDirectory scriptFolder("Scripts");
+  scriptFolder.listDir();
+  vector<ofFile> stateFiles = scriptFolder.getFiles();
+  for(ofFile &state : stateFiles) {
+    if(state.isDirectory())continue;
+    const string &filename = state.getFileName();
+    const string &name = filename.substr(0,filename.rfind('.'));
+    if(name == "boot.lua")continue;
+    lua_getglobal(L, "loadModule");
+    lua_pushstring(L, string(name).c_str());
+    callLua(L, name, 1,0);
+  }
+  
+  lua_getglobal(L, "changeState");
   lua_pushstring(L, string(start).c_str());
-  callLua(L, "loadState", 1,0);
+  callLua(L, "changeState", 1,0);
   
   callLuaFunc(L, "_setup");
 }
