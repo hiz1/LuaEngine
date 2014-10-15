@@ -41,16 +41,21 @@ namespace input {
     return 1;
   }
   
-  static const struct luaL_Reg engineLib [] = {
+  static const struct luaL_Reg keyboardLib [] = {
     {"cursor"     , l_cursor     },
     {"button"     , l_button     },
-    {"mousePos"   , l_mousePos   },
-    {"mouseButton", l_mouseButton},
+    {NULL, NULL}
+  };
+  
+  static const struct luaL_Reg mouseLib [] = {
+    {"pos"   , l_mousePos   },
+    {"button", l_mouseButton},
     {NULL, NULL}
   };
   
   void openlib(lua_State *L) {
-    luaL_register(L, "app", engineLib);
+    luaL_register(L, "key", keyboardLib);
+    luaL_register(L, "mouse", mouseLib);
   }
   
   #pragma mark - module contents

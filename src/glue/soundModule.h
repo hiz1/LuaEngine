@@ -23,8 +23,12 @@ namespace sound {
   #pragma mark - lua
   void playBGM(string bgmFile, double volume = 1.0);
   void stopBGM();
+  void setBGMVolume(float val) ;
+  float getBGMVolume();
   void playBGS(string bgsFile, double volume = 1.0);
   void stopBGS();
+  void setBGSVolume(float val) ;
+  float getBGSVolume();
   bool playSE(string seFile, double volume = 1.0);
   
 }

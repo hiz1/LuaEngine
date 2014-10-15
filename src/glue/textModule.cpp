@@ -58,7 +58,7 @@ namespace text {
   static const struct luaL_Reg engineLib [] = {
     {"setFont"    , l_setFont    },
     {"setTextPivot", l_setTextPivot},
-    {"drawString" , l_drawString },
+    {"draw"       , l_drawString },
     {"length"     , l_length     },
     {"substr"     , l_substr     },
     {"paragraph"  , l_paragraph  },
@@ -67,7 +67,7 @@ namespace text {
   };
   
   void openlib(lua_State *L) {
-    luaL_register(L, "app", engineLib);
+    luaL_register(L, "text", engineLib);
   }
   
   void initlib(vector<string> ids, vector<string> ttfPaths, vector<double> sizes, Pivot pivot) {

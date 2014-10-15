@@ -197,7 +197,7 @@ namespace image {
     lua_setfield(L, -2, "__index");
     luaL_register(L, NULL, engineLib_image_m);
     // set constructer
-    luaL_register(L, "image", engineLib_image_f);
+    luaL_register(L, "Image", engineLib_image_f);
   }
   
   ofPtr<TexturePlane> createImage(const string &imageFile) {

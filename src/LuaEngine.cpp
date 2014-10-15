@@ -105,8 +105,6 @@ void LuaEngine::setup() {
   lua_getglobal(L, "changeState");
   lua_pushstring(L, string(start).c_str());
   callLua(L, "changeState", 1,0);
-  
-  callLuaFunc(L, "_setup");
 }
 
 void LuaEngine::update() {

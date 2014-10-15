@@ -28,6 +28,15 @@ namespace sound {
     stopBGM();
   }
   
+  int l_setBGMVolume(lua_State *L) {
+    bgm.setVolume(luaL_checknumber(L, 1));
+  }
+  
+  int l_getBGMVolume(lua_State *L) {
+    lua_pushnumber(L, getBGMVolume());
+    return 1;
+  }
+  
   int l_playBGS(lua_State *L) {
     if(lua_gettop(L) >= 2) {
       playBGS(luaL_checkstring(L, 1), luaL_checknumber(L, 2));
@@ -40,6 +49,15 @@ namespace sound {
     stopBGS();
   }
   
+  int l_setBGSVolume(lua_State *L) {
+    bgs.setVolume(luaL_checknumber(L, 1));
+  }
+  
+  int l_getBGSVolume(lua_State *L) {
+    lua_pushnumber(L, getBGSVolume());
+    return 1;
+  }
+
   int l_playSE(lua_State *L) {
     bool success;
     if(lua_gettop(L) >= 2) {
@@ -51,17 +69,32 @@ namespace sound {
     return 1;
   }
   
-  static const struct luaL_Reg engineLib [] = {
-    {"playBGM"    , l_playBGM    },
-    {"stopBGM"    , l_stopBGM    },
-    {"playBGS"    , l_playBGS    },
-    {"stopBGS"    , l_stopBGS    },
-    {"playSE"     , l_playSE     },
+  static const struct luaL_Reg bgmLib [] = {
+    {"play"    , l_playBGM    },
+    {"stop"    , l_stopBGM    },
+    {"setVolume", l_setBGMVolume},
+    {"getVolume", l_getBGMVolume},
+    {NULL, NULL}
+  };
+  
+  static const struct luaL_Reg bgsLib [] = {
+    {"play"    , l_playBGS    },
+    {"stop"    , l_stopBGS    },
+    {"setVolume", l_setBGSVolume},
+    {"getVolume", l_getBGSVolume},
+    {NULL, NULL}
+  };
+  
+  static const struct luaL_Reg seLib [] = {
+    {"play"    , l_playSE    },
     {NULL, NULL}
   };
   
   void openlib(lua_State *L) {
-    luaL_register(L, "app", engineLib);
+    luaL_register(L, "bgm", bgmLib);
+    luaL_register(L, "bgs", bgsLib);
+    luaL_register(L, "se" , seLib);
+
   }
   
   void initlib(int seChunnel) {
@@ -75,6 +108,7 @@ namespace sound {
   }
   
   void playBGM(string bgmFile, double volume) {
+    bgm.stop();
     bgm.loadSound("BGM/" + bgmFile, true);
     bgm.setVolume(volume);
     bgm.play();
@@ -82,6 +116,14 @@ namespace sound {
   
   void stopBGM() {
     bgm.stop();
+  }
+  
+  void setBGMVolume(float val) {
+    bgm.setVolume(val);
+  }
+  
+  float getBGMVolume() {
+    return bgm.getVolume();
   }
   
   void playBGS(string bgsFile, double volume) {
@@ -92,6 +134,14 @@ namespace sound {
   
   void stopBGS() {
     bgs.stop();
+  }
+  
+  void setBGSVolume(float val) {
+    bgs.setVolume(val);
+  }
+  
+  float getBGSVolume() {
+    return bgs.getVolume();
   }
   
   bool playSE(string seFile, double volume) {
